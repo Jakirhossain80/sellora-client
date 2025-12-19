@@ -114,6 +114,7 @@ function AdminProducts() {
                 setFormData={setFormData}
                 setOpenCreateProductsDialog={setOpenCreateProductsDialog}
                 setCurrentEditedId={setCurrentEditedId}
+                setUploadedImageUrl={setUploadedImageUrl}
                 product={productItem}
                 handleDelete={handleDelete}
                 // (Recommended: also pass setUploadedImageUrl so edit mode shows old image)

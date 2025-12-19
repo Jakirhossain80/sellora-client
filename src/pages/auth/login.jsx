@@ -18,13 +18,15 @@ function AuthLogin() {
   function onSubmit(event) {
     event.preventDefault();
 
-    dispatch(loginUser(formData)).then((data) => {
-      if (data?.payload?.success) {
-        toast.success(data?.payload?.message);
-      } else {
-        toast.error(data?.payload?.message);
-      }
-    });
+    dispatch(loginUser(formData))
+      .unwrap()
+      .then((res) => {
+        toast.success(res?.message || "Logged in successfully");
+        setFormData((prev) => ({ ...prev, password: "" }));
+      })
+      .catch((err) => {
+        toast.error(err?.message || "Login failed");
+      });
   }
 
   return (
@@ -34,21 +36,24 @@ function AuthLogin() {
           Sign in to your account
         </h1>
         <p className="mt-2">
-          Don't have an account
+          Don&apos;t have an account
           <Link
-            className="font-medium ml-2 text-primary hover:underline"
+            className="ml-2 font-medium text-primary hover:underline"
             to="/auth/register"
           >
             Register
           </Link>
         </p>
       </div>
+
       <CommonForm
         formControls={loginFormControls}
-        buttonText={"Sign In"}
+        buttonText="Sign In"
         formData={formData}
         setFormData={setFormData}
         onSubmit={onSubmit}
+        // optional if your CommonForm supports it:
+        // isBtnDisabled={!formData.email || !formData.password}
       />
     </div>
   );

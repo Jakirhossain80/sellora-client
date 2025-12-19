@@ -19,17 +19,17 @@ function AuthRegister() {
 
   function onSubmit(event) {
     event.preventDefault();
-    dispatch(registerUser(formData)).then((data) => {
-      if (data?.payload?.success) {
-        toast.success(data?.payload?.message);
-        navigate("/auth/login");
-      } else {
-        toast.error(data?.payload?.message);
-      }
-    });
-  }
 
-  console.log(formData);
+    dispatch(registerUser(formData))
+      .unwrap()
+      .then((res) => {
+        toast.success(res?.message || "Account created successfully");
+        navigate("/auth/login");
+      })
+      .catch((err) => {
+        toast.error(err?.message || "Registration failed");
+      });
+  }
 
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
@@ -39,20 +39,20 @@ function AuthRegister() {
         </h1>
         <p className="mt-2">
           Already have an account
-          <Link
-            className="font-medium ml-2 text-primary hover:underline"
-            to="/auth/login"
-          >
+          <Link className="ml-2 font-medium text-primary hover:underline" to="/auth/login">
             Login
           </Link>
         </p>
       </div>
+
       <CommonForm
         formControls={registerFormControls}
-        buttonText={"Sign Up"}
+        buttonText="Sign Up"
         formData={formData}
         setFormData={setFormData}
         onSubmit={onSubmit}
+        // optional:
+        // isBtnDisabled={!formData.userName || !formData.email || !formData.password}
       />
     </div>
   );
