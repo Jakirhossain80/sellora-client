@@ -19,106 +19,105 @@ function CommonForm({
   isBtnDisabled,
 }) {
   function renderInputsByComponentType(getControlItem) {
-    let element = null;
     const value = formData[getControlItem.name] || "";
 
     switch (getControlItem.componentType) {
       case "input":
-        element = (
+        return (
           <Input
-            name={getControlItem.name}
-            placeholder={getControlItem.placeholder}
             id={getControlItem.name}
+            name={getControlItem.name}
             type={getControlItem.type}
+            placeholder={getControlItem.placeholder}
             value={value}
-            onChange={(event) =>
+            required={getControlItem.required}
+            onChange={(e) =>
               setFormData({
                 ...formData,
-                [getControlItem.name]: event.target.value,
+                [getControlItem.name]: e.target.value,
               })
             }
           />
         );
 
-        break;
       case "select":
-        element = (
+        return (
           <Select
-            onValueChange={(value) =>
+            value={value}
+            onValueChange={(val) =>
               setFormData({
                 ...formData,
-                [getControlItem.name]: value,
+                [getControlItem.name]: val,
               })
             }
-            value={value}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder={getControlItem.label} />
+              <SelectValue
+                placeholder={`Select ${getControlItem.label}`}
+              />
             </SelectTrigger>
             <SelectContent>
-              {getControlItem.options && getControlItem.options.length > 0
-                ? getControlItem.options.map((optionItem) => (
-                    <SelectItem key={optionItem.id} value={optionItem.id}>
-                      {optionItem.label}
-                    </SelectItem>
-                  ))
-                : null}
+              {getControlItem.options?.map((optionItem) => (
+                <SelectItem key={optionItem.id} value={optionItem.id}>
+                  {optionItem.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         );
 
-        break;
       case "textarea":
-        element = (
+        return (
           <Textarea
+            id={getControlItem.name}
             name={getControlItem.name}
             placeholder={getControlItem.placeholder}
-            id={getControlItem.id}
             value={value}
-            onChange={(event) =>
+            required={getControlItem.required}
+            onChange={(e) =>
               setFormData({
                 ...formData,
-                [getControlItem.name]: event.target.value,
+                [getControlItem.name]: e.target.value,
               })
             }
           />
         );
-
-        break;
 
       default:
-        element = (
+        return (
           <Input
-            name={getControlItem.name}
-            placeholder={getControlItem.placeholder}
             id={getControlItem.name}
+            name={getControlItem.name}
             type={getControlItem.type}
+            placeholder={getControlItem.placeholder}
             value={value}
-            onChange={(event) =>
+            onChange={(e) =>
               setFormData({
                 ...formData,
-                [getControlItem.name]: event.target.value,
+                [getControlItem.name]: e.target.value,
               })
             }
           />
         );
-        break;
     }
-
-    return element;
   }
 
   return (
     <form onSubmit={onSubmit}>
       <div className="flex flex-col gap-3">
         {formControls.map((controlItem) => (
-          <div className="grid w-full gap-1.5" key={controlItem.name}>
+          <div key={controlItem.name} className="grid w-full gap-1.5">
             <Label className="mb-1">{controlItem.label}</Label>
             {renderInputsByComponentType(controlItem)}
           </div>
         ))}
       </div>
-      <Button disabled={isBtnDisabled} type="submit" className="mt-2 w-full">
+
+      <Button
+        type="submit"
+        disabled={isBtnDisabled}
+        className="mt-2 w-full"
+      >
         {buttonText || "Submit"}
       </Button>
     </form>

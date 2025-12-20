@@ -33,22 +33,16 @@ function App() {
     dispatch(checkAuth());
   }, [dispatch]);
 
-  if (isLoading) return <Skeleton className="w-[800px] bg-black h-[600px]" />;
-
-  console.log(isLoading, user);
+  if (isLoading) return <Skeleton className="h-screen w-full" />;
 
   return (
     <div className="flex flex-col overflow-hidden bg-background">
       <Routes>
         <Route
           path="/"
-          element={
-            <CheckAuth
-              isAuthenticated={isAuthenticated}
-              user={user}
-            ></CheckAuth>
-          }
+          element={<CheckAuth isAuthenticated={isAuthenticated} user={user} />}
         />
+
         <Route
           path="/auth"
           element={
@@ -60,6 +54,7 @@ function App() {
           <Route path="login" element={<AuthLogin />} />
           <Route path="register" element={<AuthRegister />} />
         </Route>
+
         <Route
           path="/admin"
           element={
@@ -73,6 +68,7 @@ function App() {
           <Route path="orders" element={<AdminOrders />} />
           <Route path="features" element={<AdminFeatures />} />
         </Route>
+
         <Route
           path="/shop"
           element={
@@ -89,7 +85,16 @@ function App() {
           <Route path="payment-success" element={<PaymentSuccessPage />} />
           <Route path="search" element={<SearchProducts />} />
         </Route>
-        <Route path="/unauth-page" element={<UnauthPage />} />
+
+        <Route
+          path="/unauth-page"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <UnauthPage />
+            </CheckAuth>
+          }
+        />
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
