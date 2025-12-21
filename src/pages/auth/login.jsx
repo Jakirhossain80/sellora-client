@@ -15,19 +15,17 @@ function AuthLogin() {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
 
-  function onSubmit(event) {
+  const onSubmit = async (event) => {
     event.preventDefault();
 
-    dispatch(loginUser(formData))
-      .unwrap()
-      .then((res) => {
-        toast.success(res?.message || "Logged in successfully");
-        setFormData((prev) => ({ ...prev, password: "" }));
-      })
-      .catch((err) => {
-        toast.error(err?.message || "Login failed");
-      });
-  }
+    try {
+      const res = await dispatch(loginUser(formData)).unwrap();
+      toast.success(res?.message || "Logged in successfully");
+      setFormData((prev) => ({ ...prev, password: "" }));
+    } catch (err) {
+      toast.error(err?.message || "Login failed");
+    }
+  };
 
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
@@ -52,11 +50,10 @@ function AuthLogin() {
         formData={formData}
         setFormData={setFormData}
         onSubmit={onSubmit}
-        // optional if your CommonForm supports it:
-        // isBtnDisabled={!formData.email || !formData.password}
       />
     </div>
   );
 }
 
 export default AuthLogin;
+

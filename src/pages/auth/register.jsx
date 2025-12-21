@@ -17,19 +17,17 @@ function AuthRegister() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  function onSubmit(event) {
+  const onSubmit = async (event) => {
     event.preventDefault();
 
-    dispatch(registerUser(formData))
-      .unwrap()
-      .then((res) => {
-        toast.success(res?.message || "Account created successfully");
-        navigate("/auth/login");
-      })
-      .catch((err) => {
-        toast.error(err?.message || "Registration failed");
-      });
-  }
+    try {
+      const res = await dispatch(registerUser(formData)).unwrap();
+      toast.success(res?.message || "Account created successfully");
+      navigate("/auth/login");
+    } catch (err) {
+      toast.error(err?.message || "Registration failed");
+    }
+  };
 
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
@@ -39,7 +37,10 @@ function AuthRegister() {
         </h1>
         <p className="mt-2">
           Already have an account
-          <Link className="ml-2 font-medium text-primary hover:underline" to="/auth/login">
+          <Link
+            className="ml-2 font-medium text-primary hover:underline"
+            to="/auth/login"
+          >
             Login
           </Link>
         </p>
@@ -51,8 +52,6 @@ function AuthRegister() {
         formData={formData}
         setFormData={setFormData}
         onSubmit={onSubmit}
-        // optional:
-        // isBtnDisabled={!formData.userName || !formData.email || !formData.password}
       />
     </div>
   );
