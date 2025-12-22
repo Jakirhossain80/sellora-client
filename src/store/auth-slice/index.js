@@ -9,49 +9,72 @@ const initialState = {
   user: null,
 };
 
-export const registerUser = createAsyncThunk("/auth/register", async (formData) => {
-  const response = await axios.post(`${API_URL}/api/auth/register`, formData, {
-    withCredentials: true,
-  });
+export const registerUser = createAsyncThunk(
+  "/auth/register",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/api/auth/register`, formData, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data || { message: err?.message || "Registration failed" });
+    }
+  }
+);
 
-  return response.data;
-});
+export const loginUser = createAsyncThunk(
+  "/auth/login",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/api/auth/login`, formData, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data || { message: err?.message || "Login failed" });
+    }
+  }
+);
 
-export const loginUser = createAsyncThunk("/auth/login", async (formData) => {
-  const response = await axios.post(`${API_URL}/api/auth/login`, formData, {
-    withCredentials: true,
-  });
+export const logoutUser = createAsyncThunk(
+  "/auth/logout",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/auth/logout`,
+        {},
+        { withCredentials: true }
+      );
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data || { message: err?.message || "Logout failed" });
+    }
+  }
+);
 
-  return response.data;
-});
-
-export const logoutUser = createAsyncThunk("/auth/logout", async () => {
-  const response = await axios.post(
-    `${API_URL}/api/auth/logout`,
-    {},
-    { withCredentials: true }
-  );
-
-  return response.data;
-});
-
-export const checkAuth = createAsyncThunk("/auth/checkauth", async () => {
-  const response = await axios.get(`${API_URL}/api/auth/check-auth`, {
-    withCredentials: true,
-    headers: {
-      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-    },
-  });
-
-  return response.data;
-});
+export const checkAuth = createAsyncThunk(
+  "/auth/checkauth",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${API_URL}/api/auth/check-auth`, {
+        withCredentials: true,
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        },
+      });
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data || { message: err?.message || "Auth check failed" });
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
     setUser: (state, action) => {
-      // Keep minimal and safe: allow manually setting user (if used somewhere)
       state.user = action.payload || null;
       state.isAuthenticated = !!action.payload;
     },
@@ -76,7 +99,6 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         console.log(action);
-
         state.isLoading = false;
         state.user = action.payload.success ? action.payload.user : null;
         state.isAuthenticated = action.payload.success;

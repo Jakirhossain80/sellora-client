@@ -2,7 +2,7 @@ import CommonForm from "@/components/common/form";
 import { loginFormControls } from "@/config";
 import { loginUser } from "@/store/auth-slice";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -14,6 +14,7 @@ const initialState = {
 function AuthLogin() {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state.auth);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -50,10 +51,10 @@ function AuthLogin() {
         formData={formData}
         setFormData={setFormData}
         onSubmit={onSubmit}
+        isBtnDisabled={isLoading}
       />
     </div>
   );
 }
 
 export default AuthLogin;
-

@@ -2,7 +2,7 @@ import CommonForm from "@/components/common/form";
 import { registerFormControls } from "@/config";
 import { registerUser } from "@/store/auth-slice";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -16,6 +16,7 @@ function AuthRegister() {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isLoading } = useSelector((state) => state.auth);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -37,10 +38,7 @@ function AuthRegister() {
         </h1>
         <p className="mt-2">
           Already have an account
-          <Link
-            className="ml-2 font-medium text-primary hover:underline"
-            to="/auth/login"
-          >
+          <Link className="ml-2 font-medium text-primary hover:underline" to="/auth/login">
             Login
           </Link>
         </p>
@@ -52,6 +50,7 @@ function AuthRegister() {
         formData={formData}
         setFormData={setFormData}
         onSubmit={onSubmit}
+        isBtnDisabled={isLoading}
       />
     </div>
   );

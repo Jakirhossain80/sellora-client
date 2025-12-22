@@ -16,7 +16,7 @@ function CommonForm({
   setFormData,
   onSubmit,
   buttonText,
-  isBtnDisabled,
+  isBtnDisabled = false,
 }) {
   function renderInputsByComponentType(getControlItem) {
     const value = formData[getControlItem.name] || "";
@@ -51,10 +51,8 @@ function CommonForm({
               })
             }
           >
-            <SelectTrigger className="w-full">
-              <SelectValue
-                placeholder={`Select ${getControlItem.label}`}
-              />
+            <SelectTrigger className="w-full" id={getControlItem.name}>
+              <SelectValue placeholder={`Select ${getControlItem.label}`} />
             </SelectTrigger>
             <SelectContent>
               {getControlItem.options?.map((optionItem) => (
@@ -107,17 +105,15 @@ function CommonForm({
       <div className="flex flex-col gap-3">
         {formControls.map((controlItem) => (
           <div key={controlItem.name} className="grid w-full gap-1.5">
-            <Label className="mb-1">{controlItem.label}</Label>
+            <Label htmlFor={controlItem.name} className="mb-1">
+              {controlItem.label}
+            </Label>
             {renderInputsByComponentType(controlItem)}
           </div>
         ))}
       </div>
 
-      <Button
-        type="submit"
-        disabled={isBtnDisabled}
-        className="mt-2 w-full"
-      >
+      <Button type="submit" disabled={isBtnDisabled} className="mt-2 w-full">
         {buttonText || "Submit"}
       </Button>
     </form>
