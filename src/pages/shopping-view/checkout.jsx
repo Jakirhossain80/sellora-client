@@ -5,7 +5,7 @@ import UserCartItemsContent from "@/components/shopping-view/cart-items-content"
 import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState } from "react";
 import { createNewOrder } from "@/store/shop/order-slice";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
@@ -16,7 +16,6 @@ function ShoppingCheckout() {
   const [isPaymentStart, setIsPaymemntStart] = useState(false);
 
   const dispatch = useDispatch();
-  const { toast } = useToast();
 
   const items = cartItems?.items || [];
 
@@ -42,18 +41,12 @@ function ShoppingCheckout() {
 
   function handleInitiatePaypalPayment() {
     if (!items || items.length === 0) {
-      toast({
-        title: "Your cart is empty. Please add items to proceed",
-        variant: "destructive",
-      });
+      toast.error("Your cart is empty. Please add items to proceed");
       return;
     }
 
     if (currentSelectedAddress === null) {
-      toast({
-        title: "Please select one address to proceed.",
-        variant: "destructive",
-      });
+      toast.error("Please select one address to proceed.");
       return;
     }
 

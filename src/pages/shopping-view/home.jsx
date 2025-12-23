@@ -24,7 +24,7 @@ import {
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { useNavigate } from "react-router-dom";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
 
@@ -58,7 +58,6 @@ function ShoppingHome() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const featureImagesCount = useMemo(
     () => (featureImageList ? featureImageList.length : 0),
@@ -89,9 +88,7 @@ function ShoppingHome() {
     ).then((data) => {
       if (data?.payload?.success) {
         dispatch(fetchCartItems(user?.id));
-        toast({
-          title: "Product is added to cart",
-        });
+        toast.success("Product is added to cart");
       }
     });
   }

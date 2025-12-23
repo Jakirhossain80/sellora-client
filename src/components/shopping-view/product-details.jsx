@@ -5,7 +5,7 @@ import { Separator } from "../ui/separator";
 import { Input } from "../ui/input";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
-import { useToast } from "../ui/use-toast";
+import { toast } from "sonner";
 import { setProductDetails } from "@/store/shop/products-slice";
 import { Label } from "../ui/label";
 import StarRatingComponent from "../common/star-rating";
@@ -20,8 +20,6 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
   const { reviews } = useSelector((state) => state.shopReview);
-
-  const { toast } = useToast();
 
   function handleRatingChange(getRating) {
     setRating(getRating);
@@ -39,10 +37,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
         const getQuantity = getCartItems[indexOfCurrentItem].quantity;
 
         if (getQuantity + 1 > getTotalStock) {
-          toast({
-            title: `Only ${getQuantity} quantity can be added for this item`,
-            variant: "destructive",
-          });
+          toast.error(`Only ${getQuantity} quantity can be added for this item`);
           return;
         }
       }
@@ -57,9 +52,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
     ).then((data) => {
       if (data?.payload?.success) {
         dispatch(fetchCartItems(user?.id));
-        toast({
-          title: "Product is added to cart",
-        });
+        toast.success("Product is added to cart");
       }
     });
   }
@@ -87,9 +80,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
         setRating(0);
         setReviewMsg("");
         dispatch(getReviews(productDetails?._id));
-        toast({
-          title: "Review added successfully!",
-        });
+        toast.success("Review added successfully!");
       }
     });
   }
@@ -103,8 +94,10 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
   const averageReview = useMemo(() => {
     if (!reviews || reviews.length === 0) return 0;
     return (
-      reviews.reduce((sum, reviewItem) => sum + (reviewItem?.reviewValue || 0), 0) /
-      reviews.length
+      reviews.reduce(
+        (sum, reviewItem) => sum + (reviewItem?.reviewValue || 0),
+        0
+      ) / reviews.length
     );
   }, [reviews]);
 
@@ -162,7 +155,10 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               <Button
                 className="w-full"
                 onClick={() =>
-                  handleAddToCart(productDetails?._id, productDetails?.totalStock)
+                  handleAddToCart(
+                    productDetails?._id,
+                    productDetails?.totalStock
+                  )
                 }
               >
                 Add to Cart

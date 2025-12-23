@@ -10,7 +10,7 @@ import {
   getOrderDetailsForAdmin,
   updateOrderStatus,
 } from "@/store/admin/order-slice";
-import { useToast } from "../ui/use-toast";
+import { toast } from "sonner";
 
 const initialFormData = {
   status: "",
@@ -20,7 +20,6 @@ function AdminOrderDetailsView({ orderDetails }) {
   const [formData, setFormData] = useState(initialFormData);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const { toast } = useToast();
 
   // Keep dropdown in sync with currently selected order
   useEffect(() => {
@@ -43,9 +42,7 @@ function AdminOrderDetailsView({ orderDetails }) {
           dispatch(getOrderDetailsForAdmin(orderDetails._id));
           dispatch(getAllOrdersForAdmin());
           setFormData(initialFormData);
-          toast({
-            title: data?.payload?.message,
-          });
+          toast.success(data?.payload?.message);
         }
       }
     );
