@@ -1,5 +1,10 @@
 import { HousePlug, LogOut, Menu, ShoppingCart, UserCog } from "lucide-react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,7 +20,7 @@ import {
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { logoutUser } from "@/store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import { Label } from "../ui/label";
 
@@ -36,8 +41,12 @@ function MenuItems() {
 
     sessionStorage.setItem("filters", JSON.stringify(currentFilter));
 
-    location.pathname.includes("listing") && currentFilter !== null
-      ? setSearchParams(new URLSearchParams(`?category=${getCurrentMenuItem.id}`))
+    const isListing = location.pathname.includes("listing");
+
+    isListing && currentFilter !== null
+      ? setSearchParams(
+          new URLSearchParams(`?category=${getCurrentMenuItem.id}`)
+        )
       : navigate(getCurrentMenuItem.path);
   }
 
@@ -72,6 +81,11 @@ function HeaderRightContent() {
     if (user?.id) dispatch(fetchCartItems(user.id));
   }, [dispatch, user?.id]);
 
+  const safeCartItems = useMemo(
+    () => (Array.isArray(cartItems?.items) ? cartItems.items : []),
+    [cartItems?.items]
+  );
+
   if (!isAuthenticated) {
     return (
       <div className="flex items-center gap-2">
@@ -86,23 +100,24 @@ function HeaderRightContent() {
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
       <Sheet open={openCartSheet} onOpenChange={setOpenCartSheet}>
-        <Button
-          onClick={() => setOpenCartSheet(true)}
-          variant="outline"
-          size="icon"
-          className="relative"
-          type="button"
-        >
-          <ShoppingCart className="h-6 w-6" />
-          <span className="absolute right-[2px] top-[-5px] text-sm font-bold">
-            {cartItems?.items?.length || 0}
-          </span>
-          <span className="sr-only">User cart</span>
-        </Button>
+        <SheetTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="relative"
+            type="button"
+          >
+            <ShoppingCart className="h-6 w-6" />
+            <span className="absolute right-[2px] top-[-5px] text-sm font-bold">
+              {safeCartItems.length || 0}
+            </span>
+            <span className="sr-only">User cart</span>
+          </Button>
+        </SheetTrigger>
 
         <UserCartWrapper
           setOpenCartSheet={setOpenCartSheet}
-          cartItems={Array.isArray(cartItems?.items) ? cartItems.items : []}
+          cartItems={safeCartItems}
         />
       </Sheet>
 
@@ -144,11 +159,17 @@ function ShoppingHeader() {
 
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="lg:hidden" type="button">
+            <Button
+              variant="outline"
+              size="icon"
+              className="lg:hidden"
+              type="button"
+            >
               <Menu className="h-6 w-6" />
               <span className="sr-only">Toggle header menu</span>
             </Button>
           </SheetTrigger>
+
           <SheetContent side="left" className="w-full max-w-xs">
             <MenuItems />
             <HeaderRightContent />
@@ -158,6 +179,7 @@ function ShoppingHeader() {
         <div className="hidden lg:block">
           <MenuItems />
         </div>
+
         <div className="hidden lg:block">
           <HeaderRightContent />
         </div>

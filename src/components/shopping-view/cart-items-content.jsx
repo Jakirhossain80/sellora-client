@@ -2,71 +2,70 @@ import { Minus, Plus, Trash } from "lucide-react";
 import { Button } from "../ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteCartItem, updateCartQuantity } from "@/store/shop/cart-slice";
-import { useToast } from "../ui/use-toast";
+import { toast } from "sonner";
 
 function UserCartItemsContent({ cartItem }) {
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
   const { productList } = useSelector((state) => state.shopProducts);
   const dispatch = useDispatch();
-  const { toast } = useToast();
 
   function handleUpdateQuantity(getCartItem, typeOfAction) {
-    if (typeOfAction == "plus") {
-      let getCartItems = cartItems.items || [];
+    if (!getCartItem?.productId) return;
+
+    if (typeOfAction === "plus") {
+      const getCartItems = cartItems?.items || [];
 
       if (getCartItems.length) {
         const indexOfCurrentCartItem = getCartItems.findIndex(
           (item) => item.productId === getCartItem?.productId
         );
 
-        const getCurrentProductIndex = productList.findIndex(
-          (product) => product._id === getCartItem?.productId
+        const getCurrentProductIndex = productList?.findIndex(
+          (product) => product?._id === getCartItem?.productId
         );
-        const getTotalStock = productList[getCurrentProductIndex].totalStock;
 
-        console.log(getCurrentProductIndex, getTotalStock, "getTotalStock");
+        const getTotalStock =
+          getCurrentProductIndex > -1
+            ? productList?.[getCurrentProductIndex]?.totalStock
+            : undefined;
 
-        if (indexOfCurrentCartItem > -1) {
+        if (indexOfCurrentCartItem > -1 && typeof getTotalStock === "number") {
           const getQuantity = getCartItems[indexOfCurrentCartItem].quantity;
           if (getQuantity + 1 > getTotalStock) {
-            toast({
-              title: `Only ${getQuantity} quantity can be added for this item`,
-              variant: "destructive",
-            });
-
+            toast.error(`Only ${getQuantity} quantity can be added for this item`);
             return;
           }
         }
       }
     }
 
+    const nextQuantity =
+      typeOfAction === "plus"
+        ? (getCartItem?.quantity || 0) + 1
+        : (getCartItem?.quantity || 0) - 1;
+
     dispatch(
       updateCartQuantity({
         userId: user?.id,
         productId: getCartItem?.productId,
-        quantity:
-          typeOfAction === "plus"
-            ? getCartItem?.quantity + 1
-            : getCartItem?.quantity - 1,
+        quantity: nextQuantity,
       })
     ).then((data) => {
       if (data?.payload?.success) {
-        toast({
-          title: "Cart item is updated successfully",
-        });
+        toast.success("Cart item is updated successfully");
       }
     });
   }
 
   function handleCartItemDelete(getCartItem) {
+    if (!getCartItem?.productId) return;
+
     dispatch(
       deleteCartItem({ userId: user?.id, productId: getCartItem?.productId })
     ).then((data) => {
       if (data?.payload?.success) {
-        toast({
-          title: "Cart item is deleted successfully",
-        });
+        toast.success("Cart item is deleted successfully");
       }
     });
   }
@@ -76,12 +75,16 @@ function UserCartItemsContent({ cartItem }) {
       <img
         src={cartItem?.image}
         alt={cartItem?.title}
+        loading="lazy"
         className="w-20 h-20 rounded object-cover"
       />
+
       <div className="flex-1">
         <h3 className="font-extrabold">{cartItem?.title}</h3>
+
         <div className="flex items-center gap-2 mt-1">
           <Button
+            type="button"
             variant="outline"
             className="h-8 w-8 rounded-full"
             size="icon"
@@ -91,30 +94,44 @@ function UserCartItemsContent({ cartItem }) {
             <Minus className="w-4 h-4" />
             <span className="sr-only">Decrease</span>
           </Button>
+
           <span className="font-semibold">{cartItem?.quantity}</span>
+
           <Button
+            type="button"
             variant="outline"
             className="h-8 w-8 rounded-full"
             size="icon"
             onClick={() => handleUpdateQuantity(cartItem, "plus")}
           >
             <Plus className="w-4 h-4" />
-            <span className="sr-only">Decrease</span>
+            <span className="sr-only">Increase</span>
           </Button>
         </div>
       </div>
+
       <div className="flex flex-col items-end">
         <p className="font-semibold">
           $
           {(
             (cartItem?.salePrice > 0 ? cartItem?.salePrice : cartItem?.price) *
-            cartItem?.quantity
+            (cartItem?.quantity || 0)
           ).toFixed(2)}
         </p>
+
         <Trash
           onClick={() => handleCartItemDelete(cartItem)}
           className="cursor-pointer mt-1"
           size={20}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleCartItemDelete(cartItem);
+            }
+          }}
+          aria-label="Remove item"
         />
       </div>
     </div>

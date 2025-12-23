@@ -30,20 +30,21 @@ function ShoppingOrders() {
   }
 
   useEffect(() => {
-    dispatch(getAllOrdersByUserId(user?.id));
-  }, [dispatch]);
+    if (user?.id) {
+      dispatch(getAllOrdersByUserId(user.id));
+    }
+  }, [dispatch, user?.id]);
 
   useEffect(() => {
     if (orderDetails !== null) setOpenDetailsDialog(true);
   }, [orderDetails]);
-
-  console.log(orderDetails, "orderDetails");
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Order History</CardTitle>
       </CardHeader>
+
       <CardContent>
         <Table>
           <TableHeader>
@@ -57,12 +58,17 @@ function ShoppingOrders() {
               </TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
             {orderList && orderList.length > 0
               ? orderList.map((orderItem) => (
-                  <TableRow>
+                  <TableRow key={orderItem?._id}>
                     <TableCell>{orderItem?._id}</TableCell>
-                    <TableCell>{orderItem?.orderDate.split("T")[0]}</TableCell>
+                    <TableCell>
+                      {orderItem?.orderDate
+                        ? orderItem.orderDate.split("T")[0]
+                        : ""}
+                    </TableCell>
                     <TableCell>
                       <Badge
                         className={`py-1 px-3 ${
@@ -80,15 +86,14 @@ function ShoppingOrders() {
                     <TableCell>
                       <Dialog
                         open={openDetailsDialog}
-                        onOpenChange={() => {
-                          setOpenDetailsDialog(false);
-                          dispatch(resetOrderDetails());
+                        onOpenChange={(isOpen) => {
+                          setOpenDetailsDialog(isOpen);
+                          if (!isOpen) dispatch(resetOrderDetails());
                         }}
                       >
                         <Button
-                          onClick={() =>
-                            handleFetchOrderDetails(orderItem?._id)
-                          }
+                          type="button"
+                          onClick={() => handleFetchOrderDetails(orderItem?._id)}
                         >
                           View Details
                         </Button>

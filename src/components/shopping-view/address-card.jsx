@@ -9,17 +9,17 @@ function AddressCard({
   setCurrentSelectedAddress,
   selectedId,
 }) {
+  const isSelected = selectedId?._id === addressInfo?._id;
+
   return (
     <Card
       onClick={
         setCurrentSelectedAddress
           ? () => setCurrentSelectedAddress(addressInfo)
-          : null
+          : undefined
       }
       className={`cursor-pointer border-red-700 ${
-        selectedId?._id === addressInfo?._id
-          ? "border-red-900 border-[4px]"
-          : "border-black"
+        isSelected ? "border-red-900 border-[4px]" : "border-black"
       }`}
     >
       <CardContent className="grid p-4 gap-4">
@@ -29,9 +29,26 @@ function AddressCard({
         <Label>Phone: {addressInfo?.phone}</Label>
         <Label>Notes: {addressInfo?.notes}</Label>
       </CardContent>
+
       <CardFooter className="p-3 flex justify-between">
-        <Button onClick={() => handleEditAddress(addressInfo)}>Edit</Button>
-        <Button onClick={() => handleDeleteAddress(addressInfo)}>Delete</Button>
+        <Button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleEditAddress?.(addressInfo);
+          }}
+        >
+          Edit
+        </Button>
+        <Button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDeleteAddress?.(addressInfo);
+          }}
+        >
+          Delete
+        </Button>
       </CardFooter>
     </Card>
   );
