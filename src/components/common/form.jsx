@@ -11,15 +11,24 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 
 function CommonForm({
-  formControls,
-  formData,
+  formControls = [],
+  formData = {},
   setFormData,
   onSubmit,
   buttonText,
   isBtnDisabled = false,
 }) {
+  function handleChange(name, value) {
+    if (typeof setFormData !== "function") return;
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  }
+
   function renderInputsByComponentType(getControlItem) {
-    const value = formData[getControlItem.name] || "";
+    const value = formData?.[getControlItem.name] ?? "";
 
     switch (getControlItem.componentType) {
       case "input":
@@ -31,12 +40,7 @@ function CommonForm({
             placeholder={getControlItem.placeholder}
             value={value}
             required={getControlItem.required}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: e.target.value,
-              })
-            }
+            onChange={(e) => handleChange(getControlItem.name, e.target.value)}
           />
         );
 
@@ -44,12 +48,7 @@ function CommonForm({
         return (
           <Select
             value={value}
-            onValueChange={(val) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: val,
-              })
-            }
+            onValueChange={(val) => handleChange(getControlItem.name, val)}
           >
             <SelectTrigger className="w-full" id={getControlItem.name}>
               <SelectValue placeholder={`Select ${getControlItem.label}`} />
@@ -72,12 +71,7 @@ function CommonForm({
             placeholder={getControlItem.placeholder}
             value={value}
             required={getControlItem.required}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: e.target.value,
-              })
-            }
+            onChange={(e) => handleChange(getControlItem.name, e.target.value)}
           />
         );
 
@@ -89,12 +83,8 @@ function CommonForm({
             type={getControlItem.type}
             placeholder={getControlItem.placeholder}
             value={value}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: e.target.value,
-              })
-            }
+            required={getControlItem.required}
+            onChange={(e) => handleChange(getControlItem.name, e.target.value)}
           />
         );
     }

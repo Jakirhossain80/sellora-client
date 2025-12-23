@@ -7,12 +7,16 @@ function CheckAuth({ isAuthenticated, user, children }) {
   const isAuthPage =
     path.startsWith("/auth/login") || path.startsWith("/auth/register");
 
+  const isAdmin = user?.role === "admin";
+
   // Root route redirect
   if (path === "/") {
     if (!isAuthenticated) return <Navigate to="/auth/login" replace />;
-    return user?.role === "admin"
-      ? <Navigate to="/admin/dashboard" replace />
-      : <Navigate to="/shop/home" replace />;
+    return isAdmin ? (
+      <Navigate to="/admin/dashboard" replace />
+    ) : (
+      <Navigate to="/shop/home" replace />
+    );
   }
 
   // Not logged in but trying to access protected pages
@@ -22,17 +26,19 @@ function CheckAuth({ isAuthenticated, user, children }) {
 
   // Logged in but trying to access login/register pages
   if (isAuthenticated && isAuthPage) {
-    return user?.role === "admin"
-      ? <Navigate to="/admin/dashboard" replace />
-      : <Navigate to="/shop/home" replace />;
+    return isAdmin ? (
+      <Navigate to="/admin/dashboard" replace />
+    ) : (
+      <Navigate to="/shop/home" replace />
+    );
   }
 
   // Role protection
-  if (isAuthenticated && user?.role !== "admin" && path.startsWith("/admin")) {
+  if (isAuthenticated && !isAdmin && path.startsWith("/admin")) {
     return <Navigate to="/unauth-page" replace />;
   }
 
-  if (isAuthenticated && user?.role === "admin" && path.startsWith("/shop")) {
+  if (isAuthenticated && isAdmin && path.startsWith("/shop")) {
     return <Navigate to="/admin/dashboard" replace />;
   }
 
