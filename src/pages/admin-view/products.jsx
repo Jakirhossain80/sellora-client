@@ -2,11 +2,21 @@ import ProductImageUpload from "@/components/admin-view/image-upload";
 import AdminProductTile from "@/components/admin-view/product-tile";
 import CommonForm from "@/components/common/form";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/use-toast";
 import { addProductFormElements } from "@/config";
-import { addNewProduct, deleteProduct, editProduct, fetchAllProducts } from "@/store/admin/products-slice";
-import { Fragment, useEffect, useState } from "react";
+import {
+  addNewProduct,
+  deleteProduct,
+  editProduct,
+  fetchAllProducts,
+} from "@/store/admin/products-slice";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const initialFormData = {
@@ -22,7 +32,8 @@ const initialFormData = {
 };
 
 function AdminProducts() {
-  const [openCreateProductsDialog, setOpenCreateProductsDialog] = useState(false);
+  const [openCreateProductsDialog, setOpenCreateProductsDialog] =
+    useState(false);
   const [formData, setFormData] = useState(initialFormData);
   const [imageFile, setImageFile] = useState(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
@@ -89,10 +100,13 @@ function AdminProducts() {
       .every((key) => String(formData[key]).trim() !== "");
   }
 
-  const isBtnDisabled =
-    !isFormValid() ||
-    imageLoadingState ||
-    (currentEditedId === null && !uploadedImageUrl);
+  const isBtnDisabled = useMemo(() => {
+    return (
+      !isFormValid() ||
+      imageLoadingState ||
+      (currentEditedId === null && !uploadedImageUrl)
+    );
+  }, [formData, imageLoadingState, currentEditedId, uploadedImageUrl]);
 
   useEffect(() => {
     dispatch(fetchAllProducts());
@@ -101,7 +115,7 @@ function AdminProducts() {
   return (
     <Fragment>
       <div className="mb-5 flex w-full justify-end">
-        <Button onClick={() => setOpenCreateProductsDialog(true)}>
+        <Button onClick={() => setOpenCreateProductsDialog(true)} type="button">
           Add New Product
         </Button>
       </div>
@@ -117,8 +131,6 @@ function AdminProducts() {
                 setUploadedImageUrl={setUploadedImageUrl}
                 product={productItem}
                 handleDelete={handleDelete}
-                // (Recommended: also pass setUploadedImageUrl so edit mode shows old image)
-                // setUploadedImageUrl={setUploadedImageUrl}
               />
             ))
           : null}
@@ -128,11 +140,13 @@ function AdminProducts() {
         open={openCreateProductsDialog}
         onOpenChange={(isOpen) => {
           setOpenCreateProductsDialog(isOpen);
+
           if (!isOpen) {
             setCurrentEditedId(null);
             setFormData(initialFormData);
             setImageFile(null);
             setUploadedImageUrl("");
+            setImageLoadingState(false);
           }
         }}
       >

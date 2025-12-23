@@ -7,13 +7,20 @@ import { useLocation } from "react-router-dom";
 function PaypalReturnPage() {
   const dispatch = useDispatch();
   const location = useLocation();
+
   const params = new URLSearchParams(location.search);
   const paymentId = params.get("paymentId");
   const payerId = params.get("PayerID");
 
   useEffect(() => {
     if (paymentId && payerId) {
-      const orderId = JSON.parse(sessionStorage.getItem("currentOrderId"));
+      let orderId = null;
+
+      try {
+        orderId = JSON.parse(sessionStorage.getItem("currentOrderId"));
+      } catch (e) {
+        orderId = null;
+      }
 
       dispatch(capturePayment({ paymentId, payerId, orderId })).then((data) => {
         if (data?.payload?.success) {

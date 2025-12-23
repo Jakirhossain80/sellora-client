@@ -44,6 +44,7 @@ function AdminDashboard() {
         onClick={handleUploadFeatureImage}
         className="mt-5 w-full"
         disabled={!uploadedImageUrl || imageLoadingState}
+        type="button"
       >
         {imageLoadingState ? "Uploading..." : "Upload"}
       </Button>
@@ -58,6 +59,7 @@ function AdminDashboard() {
                 <img
                   src={featureImgItem.image}
                   alt="Feature"
+                  loading="lazy"
                   className="h-[300px] w-full rounded-t-lg object-cover"
                 />
               </div>

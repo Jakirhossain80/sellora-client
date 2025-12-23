@@ -10,6 +10,7 @@ function PaymentSuccessPage() {
       <CardHeader className="p-0">
         <CardTitle className="text-4xl">Payment is successfull!</CardTitle>
       </CardHeader>
+
       <Button className="mt-5" onClick={() => navigate("/shop/account")}>
         View Orders
       </Button>
