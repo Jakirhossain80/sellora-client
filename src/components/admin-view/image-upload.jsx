@@ -10,13 +10,14 @@ function ProductImageUpload({
   imageFile,
   setImageFile,
   imageLoadingState,
-  uploadedImageUrl,
   setUploadedImageUrl,
   setImageLoadingState,
   isEditMode,
   isCustomStyling = false,
 }) {
   const inputRef = useRef(null);
+
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   function handleImageFileChange(event) {
     const selectedFile = event.target.files?.[0];
@@ -50,7 +51,7 @@ function ProductImageUpload({
       data.append("my_file", imageFile);
 
       const response = await axios.post(
-        "http://localhost:5000/api/admin/products/upload-image",
+        `${API_BASE_URL}/api/admin/products/upload-image`,
         data
       );
 
