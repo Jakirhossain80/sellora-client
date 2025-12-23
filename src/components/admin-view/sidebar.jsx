@@ -9,8 +9,18 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 
 const adminSidebarMenuItems = [
-  { id: "dashboard", label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
-  { id: "products", label: "Products", path: "/admin/products", icon: ShoppingBasket },
+  {
+    id: "dashboard",
+    label: "Dashboard",
+    path: "/admin/dashboard",
+    icon: LayoutDashboard,
+  },
+  {
+    id: "products",
+    label: "Products",
+    path: "/admin/products",
+    icon: ShoppingBasket,
+  },
   { id: "orders", label: "Orders", path: "/admin/orders", icon: BadgeCheck },
 ];
 

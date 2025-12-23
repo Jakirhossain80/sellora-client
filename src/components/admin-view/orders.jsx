@@ -32,17 +32,24 @@ function AdminOrdersView() {
     dispatch(getAllOrdersForAdmin());
   }, [dispatch]);
 
-  console.log(orderDetails, "orderList");
-
   useEffect(() => {
     if (orderDetails !== null) setOpenDetailsDialog(true);
   }, [orderDetails]);
+
+  function handleDialogChange(isOpen) {
+    setOpenDetailsDialog(isOpen);
+
+    if (!isOpen) {
+      dispatch(resetOrderDetails());
+    }
+  }
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>All Orders</CardTitle>
       </CardHeader>
+
       <CardContent>
         <Table>
           <TableHeader>
@@ -56,12 +63,15 @@ function AdminOrdersView() {
               </TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
             {orderList && orderList.length > 0
               ? orderList.map((orderItem) => (
-                  <TableRow>
+                  <TableRow key={orderItem?._id}>
                     <TableCell>{orderItem?._id}</TableCell>
-                    <TableCell>{orderItem?.orderDate.split("T")[0]}</TableCell>
+                    <TableCell>
+                      {orderItem?.orderDate?.split("T")?.[0]}
+                    </TableCell>
                     <TableCell>
                       <Badge
                         className={`py-1 px-3 ${
@@ -77,17 +87,10 @@ function AdminOrdersView() {
                     </TableCell>
                     <TableCell>${orderItem?.totalAmount}</TableCell>
                     <TableCell>
-                      <Dialog
-                        open={openDetailsDialog}
-                        onOpenChange={() => {
-                          setOpenDetailsDialog(false);
-                          dispatch(resetOrderDetails());
-                        }}
-                      >
+                      <Dialog open={openDetailsDialog} onOpenChange={handleDialogChange}>
                         <Button
-                          onClick={() =>
-                            handleFetchOrderDetails(orderItem?._id)
-                          }
+                          onClick={() => handleFetchOrderDetails(orderItem?._id)}
+                          type="button"
                         >
                           View Details
                         </Button>

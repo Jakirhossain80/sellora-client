@@ -6,7 +6,7 @@ function AdminProductTile({
   setFormData,
   setOpenCreateProductsDialog,
   setCurrentEditedId,
-  setUploadedImageUrl, // ✅ add this
+  setUploadedImageUrl,
   handleDelete,
 }) {
   return (
@@ -16,6 +16,7 @@ function AdminProductTile({
           <img
             src={product?.image}
             alt={product?.title}
+            loading="lazy"
             className="w-full h-[300px] object-cover rounded-t-lg"
           />
         </div>
@@ -40,17 +41,24 @@ function AdminProductTile({
 
         <CardFooter className="flex justify-between items-center">
           <Button
+            type="button"
             onClick={() => {
               setOpenCreateProductsDialog(true);
               setCurrentEditedId(product?._id);
               setFormData(product);
-              setUploadedImageUrl?.(product?.image || ""); // ✅ crucial
+              setUploadedImageUrl?.(product?.image || "");
             }}
           >
             Edit
           </Button>
 
-          <Button onClick={() => handleDelete(product?._id)}>Delete</Button>
+          <Button
+            type="button"
+            onClick={() => handleDelete(product?._id)}
+            disabled={!product?._id}
+          >
+            Delete
+          </Button>
         </CardFooter>
       </div>
     </Card>
