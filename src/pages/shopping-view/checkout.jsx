@@ -10,7 +10,6 @@ import { toast } from "sonner";
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
-  const { approvalURL } = useSelector((state) => state.shopOrder);
 
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const [isPaymentStart, setIsPaymemntStart] = useState(false);
@@ -33,13 +32,7 @@ function ShoppingCheckout() {
       : 0;
   }, [items]);
 
-  useEffect(() => {
-    if (approvalURL) {
-      window.location.href = approvalURL;
-    }
-  }, [approvalURL]);
-
-  function handleInitiatePaypalPayment() {
+  function handleInitiatePayment() {
     if (!items || items.length === 0) {
       toast.error("Your cart is empty. Please add items to proceed");
       return;
@@ -72,7 +65,7 @@ function ShoppingCheckout() {
         notes: currentSelectedAddress?.notes,
       },
       orderStatus: "pending",
-      paymentMethod: "paypal",
+      paymentMethod: "card",
       paymentStatus: "pending",
       totalAmount: totalCartAmount,
       orderDate: new Date(),
@@ -125,10 +118,10 @@ function ShoppingCheckout() {
           </div>
 
           <div className="mt-4 w-full">
-            <Button onClick={handleInitiatePaypalPayment} className="w-full">
+            <Button onClick={handleInitiatePayment} className="w-full">
               {isPaymentStart
-                ? "Processing Paypal Payment..."
-                : "Checkout with Paypal"}
+                ? "Processing Payment..."
+                : "Proceed to Checkout"}
             </Button>
           </div>
         </div>
