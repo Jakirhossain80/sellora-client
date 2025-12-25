@@ -41,7 +41,7 @@ function AdminProductTile({
 
         <CardFooter className="flex justify-between items-center">
           <Button
-            type="button"
+            type="button" className="cursor-pointer"
             onClick={() => {
               setOpenCreateProductsDialog(true);
               setCurrentEditedId(product?._id);

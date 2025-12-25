@@ -90,7 +90,7 @@ function AdminOrdersView() {
                       <Dialog open={openDetailsDialog} onOpenChange={handleDialogChange}>
                         <Button
                           onClick={() => handleFetchOrderDetails(orderItem?._id)}
-                          type="button"
+                          type="button" className="cursor-pointer"
                         >
                           View Details
                         </Button>

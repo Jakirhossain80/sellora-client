@@ -92,7 +92,7 @@ function ShoppingOrders() {
                         }}
                       >
                         <Button
-                          type="button"
+                          type="button" className="cursor-pointer"
                           onClick={() => handleFetchOrderDetails(orderItem?._id)}
                         >
                           View Details

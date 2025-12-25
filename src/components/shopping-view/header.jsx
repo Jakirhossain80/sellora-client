@@ -23,13 +23,13 @@ import UserCartWrapper from "./cart-wrapper";
 import { useEffect, useMemo, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 
-function MenuItems() {
+function MenuItems({ closeSheet }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const isListing = location.pathname.includes("listing");
-  const activeCategoryFromUrl = searchParams.get("category"); // ✅ used for active category highlight
+  const activeCategoryFromUrl = searchParams.get("category");
 
   function handleNavigate(e, getCurrentMenuItem) {
     // ✅ Keep your existing filter behavior
@@ -44,40 +44,42 @@ function MenuItems() {
 
     sessionStorage.setItem("filters", JSON.stringify(currentFilter));
 
-    // ✅ If user clicks a category, we always want listing + ?category=...
     const isCategory =
       getCurrentMenuItem.id !== "home" &&
       getCurrentMenuItem.id !== "products" &&
       getCurrentMenuItem.id !== "search";
 
     if (isCategory) {
-      // If we are already on listing, just update search param (no navigation needed)
       if (isListing) {
         e.preventDefault();
-        setSearchParams(new URLSearchParams(`?category=${getCurrentMenuItem.id}`));
+        setSearchParams(
+          new URLSearchParams(`?category=${getCurrentMenuItem.id}`)
+        );
+        closeSheet?.(); // ✅ close mobile sheet after click
         return;
       }
 
-      // If not on listing, go to listing and set query param
       e.preventDefault();
       navigate(`/shop/listing?category=${getCurrentMenuItem.id}`);
+      closeSheet?.(); // ✅ close mobile sheet after click
       return;
     }
 
-    // ✅ Non-category items: use normal navigation
-    // (do NOT preventDefault; let NavLink handle it so active works reliably)
+    // ✅ Non-category items: let NavLink navigate normally
+    // But still close sheet after click.
+    closeSheet?.();
   }
 
   function getIsActive(menuItem, isNavLinkActive) {
     const isCategory =
-      menuItem.id !== "home" && menuItem.id !== "products" && menuItem.id !== "search";
+      menuItem.id !== "home" &&
+      menuItem.id !== "products" &&
+      menuItem.id !== "search";
 
-    // ✅ For category items, active depends on /shop/listing + ?category=<id>
     if (isCategory) {
       return isListing && activeCategoryFromUrl === menuItem.id;
     }
 
-    // ✅ For normal items, use NavLink's isActive
     return isNavLinkActive;
   }
 
@@ -89,7 +91,6 @@ function MenuItems() {
           menuItem.id !== "products" &&
           menuItem.id !== "search";
 
-        // ✅ Category items always point to listing (their “active” will be handled via query param)
         const to = isCategory ? "/shop/listing" : menuItem.path;
 
         return (
@@ -140,10 +141,10 @@ function HeaderRightContent() {
   if (!isAuthenticated) {
     return (
       <div className="flex items-center gap-2">
-        <Button variant="outline" onClick={() => navigate("/auth/login")}>
+        <Button className="cursor-pointer" variant="outline" onClick={() => navigate("/auth/login")}>
           Login
         </Button>
-        <Button onClick={() => navigate("/auth/register")}>Register</Button>
+        <Button className="cursor-pointer" onClick={() => navigate("/auth/register")}>Register</Button>
       </div>
     );
   }
@@ -155,7 +156,7 @@ function HeaderRightContent() {
           <Button
             variant="outline"
             size="icon"
-            className="relative"
+            className="relative cursor-pointer"
             type="button"
           >
             <ShoppingCart className="h-6 w-6" />
@@ -200,6 +201,8 @@ function HeaderRightContent() {
 }
 
 function ShoppingHeader() {
+  const [openMobileMenu, setOpenMobileMenu] = useState(false);
+
   return (
     <header className="fixed top-0 z-40 w-full border-b bg-background">
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
@@ -208,7 +211,8 @@ function ShoppingHeader() {
           <span className="font-bold">Ecommerce</span>
         </NavLink>
 
-        <Sheet>
+        {/* ✅ FIX: control Sheet open state so we can close it on NavLink click */}
+        <Sheet open={openMobileMenu} onOpenChange={setOpenMobileMenu}>
           <SheetTrigger asChild>
             <Button
               variant="outline"
@@ -222,7 +226,7 @@ function ShoppingHeader() {
           </SheetTrigger>
 
           <SheetContent side="left" className="w-full max-w-xs">
-            <MenuItems />
+            <MenuItems closeSheet={() => setOpenMobileMenu(false)} />
             <HeaderRightContent />
           </SheetContent>
         </Sheet>

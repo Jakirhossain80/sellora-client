@@ -111,7 +111,7 @@ function ProductImageUpload({
             <Button
               variant="ghost"
               size="icon"
-              className="text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground cursor-pointer"
               onClick={handleRemoveImage}
               type="button"
             >

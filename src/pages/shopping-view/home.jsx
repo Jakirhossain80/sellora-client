@@ -27,6 +27,7 @@ import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { toast } from "sonner";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
+import Footer from "@/components/shopping-view/Footer";
 
 const categoriesWithIcon = [
   { id: "men", label: "Men", icon: ShirtIcon },
@@ -79,7 +80,7 @@ function HeroBannerSlide({ image, isActive, eager = false }) {
         <Button
           type="button"
           onClick={() => navigate("/shop/listing")}
-          className="mt-6 px-6 py-3 text-base font-semibold"
+          className="mt-6 px-6 py-3 text-base font-semibold cursor-pointer"
         >
           Shop Now
         </Button>
@@ -195,7 +196,7 @@ function ShoppingHome() {
                 )
               : null
           }
-          className="absolute top-1/2 left-4 z-20 transform -translate-y-1/2 bg-white/80"
+          className="absolute top-1/2 left-4 z-20 transform -translate-y-1/2 bg-white/80 cursor-pointer"
           disabled={!featureImagesCount}
           type="button"
         >
@@ -212,7 +213,7 @@ function ShoppingHome() {
                 )
               : null
           }
-          className="absolute top-1/2 right-4 z-20 transform -translate-y-1/2 bg-white/80"
+          className="absolute top-1/2 right-4 z-20 transform -translate-y-1/2 bg-white/80 cursor-pointer"
           disabled={!featureImagesCount}
           type="button"
         >
@@ -289,6 +290,13 @@ function ShoppingHome() {
         setOpen={setOpenDetailsDialog}
         productDetails={productDetails}
       />
+
+
+      <section>
+        <footer>
+          <Footer/>
+        </footer>
+      </section>
     </div>
   );
 }

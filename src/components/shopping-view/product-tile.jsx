@@ -9,7 +9,7 @@ function ShoppingProductTile({
   handleAddtoCart,
 }) {
   return (
-    <Card className="w-full max-w-sm mx-auto">
+    <Card className="w-full max-w-sm mx-auto cursor-pointer hover:scale-101 transition-all duration-300">
       <div
         role="button"
         tabIndex={0}
@@ -25,7 +25,7 @@ function ShoppingProductTile({
           <img
             src={product?.image}
             alt={product?.title || "Product image"}
-            className="w-full h-[300px] object-cover rounded-t-lg"
+            className="w-full object-cover rounded-t-lg p-4"
             loading="lazy"
           />
 
@@ -86,7 +86,7 @@ function ShoppingProductTile({
               e.stopPropagation();
               handleAddtoCart?.(product?._id, product?.totalStock);
             }}
-            className="w-full"
+            className="w-full cursor-pointer"
           >
             Add to cart
           </Button>

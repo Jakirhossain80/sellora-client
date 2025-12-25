@@ -32,7 +32,7 @@ function AddressCard({
 
       <CardFooter className="p-3 flex justify-between">
         <Button
-          type="button"
+          type="button" className="cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
             handleEditAddress?.(addressInfo);

@@ -28,7 +28,7 @@ function HeroBanner({ image }) {
 
         <Button
           onClick={() => navigate("/shop/listing")}
-          className="mt-6 px-6 py-3 text-base font-semibold"
+          className="mt-6 px-6 py-3 text-base font-semibold cursor-pointer"
         >
           Shop Now
         </Button>

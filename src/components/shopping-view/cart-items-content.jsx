@@ -76,7 +76,7 @@ function UserCartItemsContent({ cartItem }) {
         src={cartItem?.image}
         alt={cartItem?.title}
         loading="lazy"
-        className="w-20 h-20 rounded object-cover"
+        className="w-1/6 rounded object-cover"
       />
 
       <div className="flex-1">
@@ -86,7 +86,7 @@ function UserCartItemsContent({ cartItem }) {
           <Button
             type="button"
             variant="outline"
-            className="h-8 w-8 rounded-full"
+            className="h-8 w-8 rounded-full cursor-pointer"
             size="icon"
             disabled={cartItem?.quantity === 1}
             onClick={() => handleUpdateQuantity(cartItem, "minus")}

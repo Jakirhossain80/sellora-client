@@ -117,8 +117,8 @@ function ShoppingCheckout() {
             </div>
           </div>
 
-          <div className="mt-4 w-full">
-            <Button onClick={handleInitiatePayment} className="w-full">
+          <div className="mt-4 w-full ">
+            <Button onClick={handleInitiatePayment} className="w-full cursor-pointer">
               {isPaymentStart
                 ? "Processing Payment..."
                 : "Proceed to Checkout"}

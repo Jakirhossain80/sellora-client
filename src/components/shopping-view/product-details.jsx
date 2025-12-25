@@ -57,11 +57,15 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
     });
   }
 
-  function handleDialogClose() {
-    setOpen(false);
-    dispatch(setProductDetails());
-    setRating(0);
-    setReviewMsg("");
+  // ✅ FIX: only close when Dialog changes to "closed"
+  // This prevents scroll-lock issues caused by closing logic running on open.
+  function handleDialogOpenChange(isOpen) {
+    if (!isOpen) {
+      setOpen(false);
+      dispatch(setProductDetails());
+      setRating(0);
+      setReviewMsg("");
+    }
   }
 
   function handleAddReview() {
@@ -102,22 +106,22 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
   }, [reviews]);
 
   return (
-    <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className="grid grid-cols-2 gap-8 sm:p-12 max-w-[90vw] sm:max-w-[80vw] lg:max-w-[70vw]">
+    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
+      {/* ✅ FIX: make dialog content itself scrollable on smaller screens */}
+      <DialogContent className="grid grid-cols-2 gap-8 sm:p-12 max-w-[80vw] sm:max-w-[70vw] lg:max-w-[60vw] max-h-11/12 overflow-y-auto">
         <div className="relative overflow-hidden rounded-lg">
           <img
             src={productDetails?.image}
             alt={productDetails?.title}
             width={600}
-            height={600}
-            className="aspect-square w-full object-cover"
+            className="w-full object-cover p-6"
           />
         </div>
 
         <div>
           <div>
             <h1 className="text-3xl font-extrabold">{productDetails?.title}</h1>
-            <p className="text-muted-foreground text-2xl mb-5 mt-4">
+            <p className="text-muted-foreground text-2xl mb-5 mt-4 text-justify">
               {productDetails?.description}
             </p>
           </div>
@@ -153,7 +157,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               </Button>
             ) : (
               <Button
-                className="w-full"
+                className="w-full cursor-pointer"
                 onClick={() =>
                   handleAddToCart(
                     productDetails?._id,
@@ -220,6 +224,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               />
 
               <Button
+                className="cursor-pointer"
                 onClick={handleAddReview}
                 disabled={reviewMsg.trim() === "" || rating === 0}
               >

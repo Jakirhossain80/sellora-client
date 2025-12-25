@@ -20,9 +20,9 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
       : 0;
 
   return (
-    <SheetContent className="sm:max-w-md">
+    <SheetContent className="sm:max-w-md p-1 sm:p-2 md:p-4">
       <SheetHeader>
-        <SheetTitle>Your Cart</SheetTitle>
+        <SheetTitle className="font-extrabold">Your Cart</SheetTitle>
       </SheetHeader>
 
       <div className="mt-8 space-y-4">
@@ -49,7 +49,7 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
           navigate("/shop/checkout");
           setOpenCartSheet?.(false);
         }}
-        className="w-full mt-6"
+        className="w-full mt-6 cursor-pointer"
       >
         Checkout
       </Button>

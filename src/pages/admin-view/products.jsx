@@ -113,7 +113,7 @@ function AdminProducts() {
 
   return (
     <Fragment>
-      <div className="mb-5 flex w-full justify-end">
+      <div className="mb-5 flex w-full justify-end cursor-pointer">
         <Button onClick={() => setOpenCreateProductsDialog(true)} type="button">
           Add New Product
         </Button>

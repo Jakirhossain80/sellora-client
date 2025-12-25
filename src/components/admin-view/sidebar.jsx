@@ -83,7 +83,7 @@ function AdminSideBar({ open, setOpen }) {
         <button
           type="button"
           onClick={() => navigate("/admin/dashboard")}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 cursor-pointer"
         >
           <ChartNoAxesCombined size={30} />
           <h1 className="text-2xl font-extrabold">Admin Panel</h1>
