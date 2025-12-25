@@ -45,6 +45,49 @@ const brandsWithIcon = [
   { id: "h&m", label: "H&M", icon: Heater },
 ];
 
+// ✅ Banner slide with text + button overlay (merged improvement)
+function HeroBannerSlide({ image, isActive, eager = false }) {
+  const navigate = useNavigate();
+
+  return (
+    <div
+      className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ${
+        isActive ? "opacity-100" : "opacity-0"
+      }`}
+      style={{ pointerEvents: isActive ? "auto" : "none" }}
+    >
+      {/* Banner Image */}
+      <img
+        src={image}
+        alt="Sellora Banner"
+        loading={eager ? "eager" : "lazy"}
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/50" />
+
+      {/* Text + Button */}
+      <div className="relative z-10 flex h-full flex-col items-center justify-center text-center px-4">
+        <h1 className="text-3xl md:text-5xl font-extrabold text-white">
+          Discover the Best Products
+        </h1>
+        <p className="mt-4 max-w-xl text-base md:text-lg text-white/90">
+          Shop premium products with amazing deals and fast delivery.
+        </p>
+
+        <Button
+          type="button"
+          onClick={() => navigate("/shop/listing")}
+          className="mt-6 px-6 py-3 text-base font-semibold"
+        >
+          Shop Now
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -127,18 +170,16 @@ function ShoppingHome() {
   }, [featureImagesCount]);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen space-y-10">
+      {/* ✅ Banner Slider (kept) + ✅ Text/Button overlay (added) */}
       <div className="relative w-full h-[600px] overflow-hidden">
         {featureImageList && featureImageList.length > 0
           ? featureImageList.map((slide, index) => (
-              <img
-                src={slide?.image}
-                alt={`Banner ${index + 1}`}
-                loading={index === 0 ? "eager" : "lazy"}
+              <HeroBannerSlide
                 key={slide?._id || slide?.image || index}
-                className={`${
-                  index === currentSlide ? "opacity-100" : "opacity-0"
-                } absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
+                image={slide?.image}
+                isActive={index === currentSlide}
+                eager={index === 0}
               />
             ))
           : null}
@@ -154,8 +195,9 @@ function ShoppingHome() {
                 )
               : null
           }
-          className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80"
+          className="absolute top-1/2 left-4 z-20 transform -translate-y-1/2 bg-white/80"
           disabled={!featureImagesCount}
+          type="button"
         >
           <ChevronLeftIcon className="w-4 h-4" />
         </Button>
@@ -170,8 +212,9 @@ function ShoppingHome() {
                 )
               : null
           }
-          className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80"
+          className="absolute top-1/2 right-4 z-20 transform -translate-y-1/2 bg-white/80"
           disabled={!featureImagesCount}
+          type="button"
         >
           <ChevronRightIcon className="w-4 h-4" />
         </Button>

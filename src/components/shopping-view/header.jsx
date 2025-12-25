@@ -1,6 +1,6 @@
 import { HousePlug, LogOut, Menu, ShoppingCart, UserCog } from "lucide-react";
 import {
-  Link,
+  NavLink,
   useLocation,
   useNavigate,
   useSearchParams,
@@ -22,14 +22,17 @@ import { logoutUser } from "@/store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
 import { useEffect, useMemo, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
-import { Label } from "../ui/label";
 
 function MenuItems() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  function handleNavigate(getCurrentMenuItem) {
+  const isListing = location.pathname.includes("listing");
+  const activeCategoryFromUrl = searchParams.get("category"); // ✅ used for active category highlight
+
+  function handleNavigate(e, getCurrentMenuItem) {
+    // ✅ Keep your existing filter behavior
     sessionStorage.removeItem("filters");
 
     const currentFilter =
@@ -41,26 +44,74 @@ function MenuItems() {
 
     sessionStorage.setItem("filters", JSON.stringify(currentFilter));
 
-    const isListing = location.pathname.includes("listing");
+    // ✅ If user clicks a category, we always want listing + ?category=...
+    const isCategory =
+      getCurrentMenuItem.id !== "home" &&
+      getCurrentMenuItem.id !== "products" &&
+      getCurrentMenuItem.id !== "search";
 
-    isListing && currentFilter !== null
-      ? setSearchParams(
-          new URLSearchParams(`?category=${getCurrentMenuItem.id}`)
-        )
-      : navigate(getCurrentMenuItem.path);
+    if (isCategory) {
+      // If we are already on listing, just update search param (no navigation needed)
+      if (isListing) {
+        e.preventDefault();
+        setSearchParams(new URLSearchParams(`?category=${getCurrentMenuItem.id}`));
+        return;
+      }
+
+      // If not on listing, go to listing and set query param
+      e.preventDefault();
+      navigate(`/shop/listing?category=${getCurrentMenuItem.id}`);
+      return;
+    }
+
+    // ✅ Non-category items: use normal navigation
+    // (do NOT preventDefault; let NavLink handle it so active works reliably)
+  }
+
+  function getIsActive(menuItem, isNavLinkActive) {
+    const isCategory =
+      menuItem.id !== "home" && menuItem.id !== "products" && menuItem.id !== "search";
+
+    // ✅ For category items, active depends on /shop/listing + ?category=<id>
+    if (isCategory) {
+      return isListing && activeCategoryFromUrl === menuItem.id;
+    }
+
+    // ✅ For normal items, use NavLink's isActive
+    return isNavLinkActive;
   }
 
   return (
     <nav className="mb-3 flex flex-col gap-6 lg:mb-0 lg:flex-row lg:items-center">
-      {shoppingViewHeaderMenuItems.map((menuItem) => (
-        <Label
-          key={menuItem.id}
-          onClick={() => handleNavigate(menuItem)}
-          className="cursor-pointer text-sm font-medium"
-        >
-          {menuItem.label}
-        </Label>
-      ))}
+      {shoppingViewHeaderMenuItems.map((menuItem) => {
+        const isCategory =
+          menuItem.id !== "home" &&
+          menuItem.id !== "products" &&
+          menuItem.id !== "search";
+
+        // ✅ Category items always point to listing (their “active” will be handled via query param)
+        const to = isCategory ? "/shop/listing" : menuItem.path;
+
+        return (
+          <NavLink
+            key={menuItem.id}
+            to={to}
+            onClick={(e) => handleNavigate(e, menuItem)}
+            className={({ isActive }) => {
+              const active = getIsActive(menuItem, isActive);
+
+              return [
+                "text-sm font-medium",
+                "cursor-pointer",
+                "transition-colors",
+                active ? "text-primary" : "text-foreground",
+              ].join(" ");
+            }}
+          >
+            {menuItem.label}
+          </NavLink>
+        );
+      })}
     </nav>
   );
 }
@@ -89,7 +140,6 @@ function HeaderRightContent() {
   if (!isAuthenticated) {
     return (
       <div className="flex items-center gap-2">
-        {/* ✅ FIX: correct auth routes */}
         <Button variant="outline" onClick={() => navigate("/auth/login")}>
           Login
         </Button>
@@ -151,12 +201,12 @@ function HeaderRightContent() {
 
 function ShoppingHeader() {
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background">
+    <header className="fixed top-0 z-40 w-full border-b bg-background">
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
-        <Link to="/shop/home" className="flex items-center gap-2">
+        <NavLink to="/shop/home" className="flex items-center gap-2">
           <HousePlug className="h-6 w-6" />
           <span className="font-bold">Ecommerce</span>
-        </Link>
+        </NavLink>
 
         <Sheet>
           <SheetTrigger asChild>
