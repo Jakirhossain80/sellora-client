@@ -89,10 +89,11 @@ function HeaderRightContent() {
   if (!isAuthenticated) {
     return (
       <div className="flex items-center gap-2">
-        <Button variant="outline" onClick={() => navigate("/login")}>
+        {/* ✅ FIX: correct auth routes */}
+        <Button variant="outline" onClick={() => navigate("/auth/login")}>
           Login
         </Button>
-        <Button onClick={() => navigate("/registration")}>Register</Button>
+        <Button onClick={() => navigate("/auth/register")}>Register</Button>
       </div>
     );
   }

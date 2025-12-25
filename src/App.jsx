@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import AuthLayout from "./components/auth/layout";
 import AuthLogin from "./pages/auth/login";
 import AuthRegister from "./pages/auth/register";
@@ -37,11 +37,10 @@ function App() {
   return (
     <div className="flex flex-col overflow-hidden bg-background">
       <Routes>
-        <Route
-          path="/"
-          element={<CheckAuth isAuthenticated={isAuthenticated} user={user} />}
-        />
+        {/* ✅ Start app on Home page (public) */}
+        <Route path="/" element={<Navigate to="/shop/home" replace />} />
 
+        {/* Auth routes */}
         <Route
           path="/auth"
           element={
@@ -54,6 +53,7 @@ function App() {
           <Route path="register" element={<AuthRegister />} />
         </Route>
 
+        {/* ✅ Admin routes stay protected */}
         <Route
           path="/admin"
           element={
@@ -68,20 +68,40 @@ function App() {
           <Route path="features" element={<AdminFeatures />} />
         </Route>
 
-        <Route
-          path="/shop"
-          element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-              <ShoppingLayout />
-            </CheckAuth>
-          }
-        >
+        {/* ✅ Shop layout is PUBLIC now */}
+        <Route path="/shop" element={<ShoppingLayout />}>
+          {/* Public shop pages */}
           <Route path="home" element={<ShoppingHome />} />
           <Route path="listing" element={<ShoppingListing />} />
-          <Route path="checkout" element={<ShoppingCheckout />} />
-          <Route path="account" element={<ShoppingAccount />} />
-          <Route path="payment-success" element={<PaymentSuccessPage />} />
           <Route path="search" element={<SearchProducts />} />
+
+          {/* 🔒 Protected shop pages (only these require login) */}
+          <Route
+            path="checkout"
+            element={
+              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+                <ShoppingCheckout />
+              </CheckAuth>
+            }
+          />
+          <Route
+            path="account"
+            element={
+              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+                <ShoppingAccount />
+              </CheckAuth>
+            }
+          />
+
+          {/* 🔒 Usually should be protected too */}
+          <Route
+            path="payment-success"
+            element={
+              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+                <PaymentSuccessPage />
+              </CheckAuth>
+            }
+          />
         </Route>
 
         <Route
