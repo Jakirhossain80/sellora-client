@@ -166,7 +166,7 @@ function AdminProducts() {
             isEditMode={currentEditedId !== null}
           />
 
-          <div className="py-6">
+          <div className="p-6">
             <CommonForm
               onSubmit={onSubmit}
               formData={formData}

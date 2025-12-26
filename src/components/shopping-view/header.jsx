@@ -102,11 +102,20 @@ function MenuItems({ closeSheet }) {
               const active = getIsActive(menuItem, isActive);
 
               return [
-                "text-sm font-medium",
-                "cursor-pointer",
-                "transition-colors",
-                active ? "text-primary" : "text-foreground",
-              ].join(" ");
+                // base
+                "relative inline-flex w-fit",
+                "text-sm font-medium cursor-pointer transition-colors",
+                "pb-1", // space for underline
+                "text-foreground",
+
+                // underline animation (hover + active)
+                "after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-full after:bg-primary",
+                "after:origin-left after:scale-x-0 after:transition-transform after:duration-500 after:ease-in-out",
+                "hover:after:scale-x-100",
+                active ? "text-primary after:scale-x-100" : "",
+              ]
+                .filter(Boolean)
+                .join(" ");
             }}
           >
             {menuItem.label}
@@ -141,10 +150,19 @@ function HeaderRightContent() {
   if (!isAuthenticated) {
     return (
       <div className="flex items-center gap-2">
-        <Button className="cursor-pointer" variant="outline" onClick={() => navigate("/auth/login")}>
+        <Button
+          className="cursor-pointer"
+          variant="outline"
+          onClick={() => navigate("/auth/login")}
+        >
           Login
         </Button>
-        <Button className="cursor-pointer" onClick={() => navigate("/auth/register")}>Register</Button>
+        <Button
+          className="cursor-pointer"
+          onClick={() => navigate("/auth/register")}
+        >
+          Register
+        </Button>
       </div>
     );
   }
@@ -207,11 +225,9 @@ function ShoppingHeader() {
     <header className="fixed top-0 z-40 w-full border-b bg-background">
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
         <NavLink to="/shop/home" className="flex items-center gap-2">
-          <HousePlug className="h-6 w-6" />
-          <span className="font-bold">Ecommerce</span>
+          <img src="/logo-sellora.webp" alt="logo-image" className="w-14" />
         </NavLink>
 
-        {/* ✅ FIX: control Sheet open state so we can close it on NavLink click */}
         <Sheet open={openMobileMenu} onOpenChange={setOpenMobileMenu}>
           <SheetTrigger asChild>
             <Button
