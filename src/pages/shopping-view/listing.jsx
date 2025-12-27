@@ -63,6 +63,7 @@ function ShoppingListing() {
   const { productList, productDetails, pagination } = useSelector(
     (state) => state.shopProducts
   );
+   
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
 
