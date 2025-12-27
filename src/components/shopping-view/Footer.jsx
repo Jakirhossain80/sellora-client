@@ -1,5 +1,10 @@
 import { Facebook, Instagram, Linkedin, Twitter, ArrowUpRight } from "lucide-react";
-import { NavLink, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  NavLink,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { useSelector } from "react-redux";
 import { shoppingViewHeaderMenuItems } from "@/config";
 
@@ -36,7 +41,9 @@ function Footer() {
     if (isCategory) {
       if (isListing) {
         e.preventDefault();
-        setSearchParams(new URLSearchParams(`?category=${getCurrentMenuItem.id}`));
+        setSearchParams(
+          new URLSearchParams(`?category=${getCurrentMenuItem.id}`)
+        );
         return;
       }
 
@@ -63,16 +70,40 @@ function Footer() {
 
   // ✅ Keep existing footer sections, but align routes with header/app
   const supportLinks = [
-    { label: "FAQ", href: "/faq" },
-    { label: "Privacy Policy", href: "/privacy-policy" },
-    { label: "Terms & Conditions", href: "/terms" },
+    { label: "FAQ", href: "/shop/faq" },
+    { label: "Privacy Policy", href: "/shop/privacy-policy" },
+    { label: "Terms & Conditions", href: "/shop/terms-and-conditions" },
   ];
 
   const socialLinks = [
-    { label: "Facebook", href: "#", icon: Facebook },
-    { label: "Twitter / X", href: "#", icon: Twitter },
-    { label: "Instagram", href: "#", icon: Instagram },
-    { label: "LinkedIn", href: "#", icon: Linkedin },
+    {
+      label: "Facebook",
+      href: "https://www.facebook.com/",
+      icon: Facebook,
+      target: "_blank",
+      rel: "noopener noreferrer",
+    },
+    {
+      label: "Twitter / X",
+      href: "https://x.com/",
+      icon: Twitter,
+      target: "_blank",
+      rel: "noopener noreferrer",
+    },
+    {
+      label: "Instagram",
+      href: "https://www.instagram.com/",
+      icon: Instagram,
+      target: "_blank",
+      rel: "noopener noreferrer",
+    },
+    {
+      label: "LinkedIn",
+      href: "https://www.linkedin.com/",
+      icon: Linkedin,
+      target: "_blank",
+      rel: "noopener noreferrer",
+    },
   ];
 
   const authLink = isAuthenticated
@@ -90,8 +121,8 @@ function Footer() {
             </NavLink>
 
             <p className="text-sm text-muted-foreground leading-6">
-              Sellora is your modern e-commerce destination for trending products, great deals,
-              and a smooth shopping experience.
+              Sellora is your modern e-commerce destination for trending
+              products, great deals, and a smooth shopping experience.
             </p>
           </div>
 
@@ -172,6 +203,8 @@ function Footer() {
                   <a
                     key={item.label}
                     href={item.href}
+                    target={item.target}
+                    rel={item.rel}
                     aria-label={item.label}
                     className="inline-flex h-10 w-10 items-center justify-center rounded-full border bg-background text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                   >

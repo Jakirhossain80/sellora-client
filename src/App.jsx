@@ -22,6 +22,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import SearchProducts from "./pages/shopping-view/search";
 
+// ✅ New pages
+import FAQ from "./pages/shopping-view/faq";
+import PrivacyPolicy from "./pages/shopping-view/privacy-policy";
+import TermsAndConditions from "./pages/shopping-view/terms-and-conditions";
+
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
     (state) => state.auth
@@ -74,6 +79,11 @@ function App() {
           <Route path="home" element={<ShoppingHome />} />
           <Route path="listing" element={<ShoppingListing />} />
           <Route path="search" element={<SearchProducts />} />
+
+          {/* ✅ New public info pages under ShoppingLayout */}
+          <Route path="faq" element={<FAQ />} />
+          <Route path="privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="terms-and-conditions" element={<TermsAndConditions />} />
 
           {/* 🔒 Protected shop pages (only these require login) */}
           <Route

@@ -18,6 +18,7 @@ import {
 } from "@/store/admin/products-slice";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const initialFormData = {
   image: null,
@@ -40,7 +41,14 @@ function AdminProducts() {
   const [imageLoadingState, setImageLoadingState] = useState(false);
   const [currentEditedId, setCurrentEditedId] = useState(null);
 
-  const { productList } = useSelector((state) => state.adminProducts);
+  // ✅ NEW: pagination state
+  const [page, setPage] = useState(1);
+  const limit = 8;
+
+  const { productList, pagination } = useSelector(
+    (state) => state.adminProducts
+  );
+
   const dispatch = useDispatch();
 
   function onSubmit(event) {
@@ -59,7 +67,7 @@ function AdminProducts() {
         })
       ).then((data) => {
         if (data?.payload?.success) {
-          dispatch(fetchAllProducts());
+          dispatch(fetchAllProducts({ page, limit })); // ✅ UPDATED
           setFormData(initialFormData);
           setOpenCreateProductsDialog(false);
           setCurrentEditedId(null);
@@ -76,7 +84,9 @@ function AdminProducts() {
         })
       ).then((data) => {
         if (data?.payload?.success) {
-          dispatch(fetchAllProducts());
+          // ✅ After adding new product, go back to page 1 (common admin UX)
+          setPage(1);
+          dispatch(fetchAllProducts({ page: 1, limit }));
           setOpenCreateProductsDialog(false);
           setImageFile(null);
           setUploadedImageUrl("");
@@ -89,7 +99,14 @@ function AdminProducts() {
 
   function handleDelete(getCurrentProductId) {
     dispatch(deleteProduct(getCurrentProductId)).then((data) => {
-      if (data?.payload?.success) dispatch(fetchAllProducts());
+      if (data?.payload?.success) {
+        // ✅ If current page becomes invalid after delete, move one page back safely
+        const totalPages = pagination?.totalPages || 1;
+        const nextPage = page > totalPages ? Math.max(totalPages, 1) : page;
+
+        setPage(nextPage);
+        dispatch(fetchAllProducts({ page: nextPage, limit }));
+      }
     });
   }
 
@@ -107,9 +124,15 @@ function AdminProducts() {
     );
   }, [formData, imageLoadingState, currentEditedId, uploadedImageUrl]);
 
+  // ✅ UPDATED: fetch with pagination
   useEffect(() => {
-    dispatch(fetchAllProducts());
-  }, [dispatch]);
+    dispatch(fetchAllProducts({ page, limit }));
+  }, [dispatch, page]);
+
+  const totalPages = pagination?.totalPages || 1;
+  const currentPage = pagination?.currentPage || page;
+  const canPrev = currentPage > 1;
+  const canNext = pagination?.hasNextPage ?? currentPage < totalPages;
 
   return (
     <Fragment>
@@ -134,6 +157,35 @@ function AdminProducts() {
             ))
           : null}
       </div>
+
+      {/* ✅ NEW: Pagination UI (minimal, no layout break) */}
+      {totalPages > 1 ? (
+        <div className="mt-6 flex items-center justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.max(p - 1, 1))}
+            disabled={!canPrev}
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Prev
+          </Button>
+
+          <span className="text-sm font-medium">
+            Page {currentPage} of {totalPages}
+          </span>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => p + 1)}
+            disabled={!canNext}
+          >
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      ) : null}
 
       <Sheet
         open={openCreateProductsDialog}
