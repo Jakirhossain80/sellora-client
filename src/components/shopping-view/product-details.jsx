@@ -11,21 +11,37 @@ import { Label } from "../ui/label";
 import StarRatingComponent from "../common/star-rating";
 import { useEffect, useMemo, useState } from "react";
 import { addReview, getReviews } from "@/store/shop/review-slice";
+import { useLocation, useNavigate } from "react-router-dom"; // ✅ NEW
 
 function ProductDetailsDialog({ open, setOpen, productDetails }) {
   const [reviewMsg, setReviewMsg] = useState("");
   const [rating, setRating] = useState(0);
 
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+
+  // ✅ NEW: include isAuthenticated so we can redirect
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+
   const { cartItems } = useSelector((state) => state.shopCart);
   const { reviews } = useSelector((state) => state.shopReview);
+
+  const navigate = useNavigate(); // ✅ NEW
+  const location = useLocation(); // ✅ NEW
 
   function handleRatingChange(getRating) {
     setRating(getRating);
   }
 
   function handleAddToCart(getCurrentProductId, getTotalStock) {
+    // ✅ FIX: redirect to login if not authenticated (same behavior as Featured Products)
+    if (!isAuthenticated) {
+      navigate("/auth/login", {
+        replace: false,
+        state: { from: location.pathname + location.search },
+      });
+      return;
+    }
+
     const getCartItems = cartItems?.items || [];
 
     if (getCartItems.length) {

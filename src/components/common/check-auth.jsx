@@ -11,7 +11,16 @@ function CheckAuth({ isAuthenticated, user, children }) {
 
   // Root route redirect
   if (path === "/") {
-    if (!isAuthenticated) return <Navigate to="/auth/login" replace />;
+    if (!isAuthenticated) {
+      return (
+        <Navigate
+          to="/auth/login"
+          replace
+          state={{ from: location.pathname }}
+        />
+      );
+    }
+
     return isAdmin ? (
       <Navigate to="/admin/dashboard" replace />
     ) : (
@@ -21,7 +30,13 @@ function CheckAuth({ isAuthenticated, user, children }) {
 
   // Not logged in but trying to access protected pages
   if (!isAuthenticated && !isAuthPage) {
-    return <Navigate to="/auth/login" replace />;
+    return (
+      <Navigate
+        to="/auth/login"
+        replace
+        state={{ from: location.pathname }}
+      />
+    );
   }
 
   // Logged in but trying to access login/register pages

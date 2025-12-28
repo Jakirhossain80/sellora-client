@@ -22,7 +22,7 @@ import {
   fetchProductDetails,
 } from "@/store/shop/products-slice";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { toast } from "sonner";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
@@ -95,12 +95,15 @@ function ShoppingHome() {
     (state) => state.shopProducts
   );
   const { featureImageList } = useSelector((state) => state.commonFeature);
-  const { user } = useSelector((state) => state.auth);
+
+  // ✅ include isAuthenticated so we can redirect when user clicks Add to Cart
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
 
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation(); // ✅ NEW
 
   const featureImagesCount = useMemo(
     () => (featureImageList ? featureImageList.length : 0),
@@ -122,6 +125,15 @@ function ShoppingHome() {
   }
 
   function handleAddtoCart(getCurrentProductId) {
+    // ✅ NEW: redirect to login if not authenticated
+    if (!isAuthenticated) {
+      navigate("/auth/login", {
+        replace: false,
+        state: { from: location.pathname + location.search },
+      });
+      return;
+    }
+
     dispatch(
       addToCart({
         userId: user?.id,
@@ -289,8 +301,6 @@ function ShoppingHome() {
         setOpen={setOpenDetailsDialog}
         productDetails={productDetails}
       />
-
-
     </div>
   );
 }

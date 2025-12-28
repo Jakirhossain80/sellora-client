@@ -3,7 +3,7 @@ import { loginFormControls } from "@/config";
 import { loginUser } from "@/store/auth-slice";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const initialState = {
@@ -16,6 +16,11 @@ function AuthLogin() {
   const dispatch = useDispatch();
   const { isLoading } = useSelector((state) => state.auth);
 
+  // ✅ Improvement: redirect back to the page user originally tried to access
+  const location = useLocation();
+  const navigate = useNavigate();
+  const redirectTo = location.state?.from || "/shop/home";
+
   const onSubmit = async (event) => {
     event.preventDefault();
 
@@ -23,6 +28,9 @@ function AuthLogin() {
       const res = await dispatch(loginUser(formData)).unwrap();
       toast.success(res?.message || "Logged in successfully");
       setFormData((prev) => ({ ...prev, password: "" }));
+
+      // ✅ Redirect after successful login
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       toast.error(err?.message || "Login failed");
     }
