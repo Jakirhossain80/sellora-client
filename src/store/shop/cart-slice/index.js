@@ -1,10 +1,12 @@
 import axios from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 const initialState = {
-  cartItems: [],
+  // ✅ Keep shape consistent with UI usage: cartItems?.items || []
+  cartItems: { items: [] },
   isLoading: false,
 };
 
@@ -59,12 +61,26 @@ export const updateCartQuantity = createAsyncThunk(
   }
 );
 
+// ✅ NEW: clear full cart (used after successful payment)
+export const clearCartItems = createAsyncThunk(
+  "cart/clearCartItems",
+  async ({ userId }) => {
+    const response = await axios.delete(
+      `${API_BASE_URL}/api/shop/cart/clear/${userId}`,
+      { withCredentials: true }
+    );
+
+    return response.data;
+  }
+);
+
 const shoppingCartSlice = createSlice({
   name: "shoppingCart",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // addToCart
       .addCase(addToCart.pending, (state) => {
         state.isLoading = true;
       })
@@ -74,8 +90,10 @@ const shoppingCartSlice = createSlice({
       })
       .addCase(addToCart.rejected, (state) => {
         state.isLoading = false;
-        state.cartItems = [];
+        state.cartItems = { items: [] };
       })
+
+      // fetchCartItems
       .addCase(fetchCartItems.pending, (state) => {
         state.isLoading = true;
       })
@@ -85,8 +103,10 @@ const shoppingCartSlice = createSlice({
       })
       .addCase(fetchCartItems.rejected, (state) => {
         state.isLoading = false;
-        state.cartItems = [];
+        state.cartItems = { items: [] };
       })
+
+      // updateCartQuantity
       .addCase(updateCartQuantity.pending, (state) => {
         state.isLoading = true;
       })
@@ -96,8 +116,10 @@ const shoppingCartSlice = createSlice({
       })
       .addCase(updateCartQuantity.rejected, (state) => {
         state.isLoading = false;
-        state.cartItems = [];
+        state.cartItems = { items: [] };
       })
+
+      // deleteCartItem
       .addCase(deleteCartItem.pending, (state) => {
         state.isLoading = true;
       })
@@ -107,7 +129,19 @@ const shoppingCartSlice = createSlice({
       })
       .addCase(deleteCartItem.rejected, (state) => {
         state.isLoading = false;
-        state.cartItems = [];
+        state.cartItems = { items: [] };
+      })
+
+      // ✅ clearCartItems (merged improvement)
+      .addCase(clearCartItems.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(clearCartItems.fulfilled, (state) => {
+        state.isLoading = false;
+        state.cartItems = { items: [] }; // ✅ safest & consistent reset
+      })
+      .addCase(clearCartItems.rejected, (state) => {
+        state.isLoading = false;
       });
   },
 });
