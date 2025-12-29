@@ -5,6 +5,14 @@ It supports user authentication, product browsing, cart & checkout, secure payme
 
 ---
 
+## 🔗 Live Demo
+
+- **Frontend (Live Site):** https://sellora-client.vercel.app/shop/home
+- **Backend (API):** https://sellora-server-zeta.vercel.app
+- **API Health Check:** https://sellora-server-zeta.vercel.app
+
+---
+
 ## 📌 Project Overview
 
 **Sellora** is designed as a scalable and production-ready e-commerce platform where:
@@ -112,39 +120,12 @@ server/
 
 
 
----
-
-## 🔐 Environment Variables
-
-### Server (`server/.env.example`)
-```env
-NODE_ENV=production
-CLIENT_URL=http://localhost:5173
-
-MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/sellora
-
-JWT_SECRET=your_jwt_secret_here
-
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-
-STRIPE_SECRET_KEY=sk_test_********
-STRIPE_WEBHOOK_SECRET=whsec_********
-
-
-
-### Client (`client/.env.example`)
-```env)
-
-VITE_API_BASE_URL=http://localhost:5000
-
 
 👨‍💻 Author & Credits
 
 Md. Jakir Hossain
 MERN Stack Web Developer
 
-GitHub: https://github.com/your-username
+GitHub: https://github.com/Jakirhossain80
 
-LinkedIn: https://linkedin.com/in/your-profile
+LinkedIn: https://www.linkedin.com/in/jakir-hossain-dev
